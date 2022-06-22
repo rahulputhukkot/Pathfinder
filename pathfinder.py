@@ -73,16 +73,11 @@ class AStar:
         
         return grid
 
-    def fill_grids(grid, cols, rows, obstacle_ratio = False, obstacle_list = False):
+    def fill_grids(grid, cols, rows, obstacle_list = False):
 
         for i in range(cols):
             for j in range(rows):
                 grid[i][j] = Node(i,j)
-                if obstacle_ratio == False:
-                    pass
-                else:
-                    n = randint(0,100)
-                    if n < obstacle_ratio: grid[i][j].obstacle = True
         if obstacle_list == False:
             pass
         else:
@@ -112,7 +107,7 @@ class AStar:
                 final_path.append(temp.previous)
                 temp = temp.previous
             
-            print("Done !!")
+            print("Reached the destination")
 
         open_set = AStar.clean_open_set(open_set, current_node)
         closed_set.append(current_node)
@@ -143,13 +138,14 @@ class AStar:
                     neighbor.previous = current_node
                     open_set.append(neighbor)
 
-        return open_set, closed_set, current_node, final_path
+        return final_path
 
     def main(self):
 
         grid = AStar.create_grid(self.cols, self.rows)
-        grid = AStar.fill_grids(grid, self.cols, self.rows, obstacle_ratio = self.obstacle_ratio, obstacle_list = self.obstacle_list)
+        grid = AStar.fill_grids(grid, self.cols, self.rows, obstacle_list = self.obstacle_list)
         grid = AStar.get_neighbors(grid, self.cols, self.rows)
+        print(grid)
         open_set  = []
         closed_set  = []
         current_node = None
@@ -157,7 +153,7 @@ class AStar:
         open_set.append(grid[self.start[0]][self.start[1]])
         self.end = grid[self.end[0]][self.end[1]]
         while len(open_set) > 0:
-            open_set, closed_set, current_node, final_path = AStar.start_path(open_set, closed_set, current_node, self.end)
+            final_path = AStar.start_path(open_set, closed_set, current_node, self.end)
             if len(final_path) > 0:
                 break
 
@@ -182,7 +178,7 @@ if __name__ == "__main__":
         if (x,y) not in check_list:
             random_obstacles.append([x,y])
             check_list.append([x,y])
-            
+
     a_star = AStar(ground[0],  ground[1], start, end, False, random_obstacles)
     
     final_path = a_star.main()
